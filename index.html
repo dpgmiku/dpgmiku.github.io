@@ -29,6 +29,8 @@
   #stage{position:relative;width:1312px;height:1199px;transform-origin:top center;}
   #scene{position:absolute;inset:0;z-index:0;}
   #drift{position:absolute;inset:0;z-index:1;pointer-events:none;}
+  #menu-art{position:absolute;inset:0;z-index:4;pointer-events:none;display:none;}
+  body.menu #menu-art{display:block;}
   #mascot{position:absolute;left:-4px;bottom:26px;z-index:1;}
 
   .layout{
@@ -138,6 +140,60 @@
     flex-direction:column;align-items:center;justify-content:center;gap:22px;
     background:rgba(11,20,36,.90);padding:20px;
   }
+  /* the menu lets the night sky through instead of flattening it */
+  #menu{
+    /* barely any wash: the night sky and the artwork are the background */
+    background:
+      radial-gradient(ellipse 52% 34% at 50% 26%, rgba(246,169,203,.20), transparent 72%),
+      radial-gradient(ellipse 90% 70% at 50% 50%, transparent 40%, rgba(9,16,30,.55) 100%);
+    justify-content:center;padding-top:0;padding-bottom:380px;gap:20px;
+  }
+  @keyframes bobLogo{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-7px);} }
+  #menu #logo{animation:bobLogo 5s ease-in-out infinite;}
+  /* a carved wooden plaque holding the buttons */
+  .plaque{
+    position:relative;z-index:2;padding:9px;
+    background:linear-gradient(180deg,#8a5a44,#5c3b2e 60%,#472d23);
+    border:3px solid #3f2820;
+    border-radius:10px;
+    box-shadow:0 0 0 2px #7d5240 inset, 0 8px 0 rgba(0,0,0,.35), 0 0 26px rgba(0,0,0,.4);
+  }
+  .plaque:before, .plaque:after{                 /* carved finials */
+    content:'';position:absolute;left:50%;width:26px;height:12px;margin-left:-13px;
+    background:#5c3b2e;border:3px solid #3f2820;border-radius:6px;
+  }
+  .plaque:before{top:-13px;} .plaque:after{bottom:-13px;}
+  .plaque-inner{
+    padding:20px 44px;
+    background:linear-gradient(180deg,#6b4234,#43291f);
+    border:2px solid #2e1c15;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.10), inset 0 -3px 0 rgba(0,0,0,.35);
+  }
+  /* the shelf the best score sits on */
+  .shelf{
+    position:relative;z-index:2;margin-top:-6px;padding:10px 44px 12px;
+    background:linear-gradient(180deg,#7d5240,#4a2f24);
+    border:3px solid #3f2820;border-top:0;border-radius:0 0 8px 8px;
+    box-shadow:0 8px 0 rgba(0,0,0,.32);
+  }
+  .menu-best{
+    padding:5px 22px;text-align:center;color:#ffe6a6;
+    font-size:16px;letter-spacing:.22em;
+    background:linear-gradient(180deg,#6a4a2a,#4a3018);
+    border:2px solid #c9a049;box-shadow:inset 0 0 0 1px #8a6a2e;
+  }
+  .menu-best span{color:#fff3cf;}
+  /* the tagline on a ribbon */
+  .ribbon{
+    position:relative;z-index:2;margin-top:12px;
+    padding:7px 30px;color:#6a5a52;font-size:14px;letter-spacing:.16em;
+    background:linear-gradient(180deg,#efe4d6,#cdbcab);
+    border:2px solid #9c8a79;
+    clip-path:polygon(0 0,100% 0,100% 100%,0 100%,3% 50%);
+    box-shadow:0 4px 0 rgba(0,0,0,.3);
+  }
+  .ribbon .heart{color:#c96f92;}
+  .menu-buttons{position:relative;z-index:2;}
   .screen.on{display:flex;}
   #logo{width:min(700px,84%);height:auto;image-rendering:auto;
     filter:drop-shadow(0 6px 0 rgba(0,0,0,.35));}
@@ -149,18 +205,28 @@
   body.compact .logo-fallback{font-size:24px;}
   .menu-buttons{display:flex;flex-direction:column;gap:12px;align-items:center;}
   .menu-foot{color:#93a6cf;font-size:14px;letter-spacing:.16em;}
-  .version{position:absolute;right:14px;bottom:10px;color:#5f7099;
-    font-size:12px;letter-spacing:.14em;}
+  .version{
+    position:absolute;right:58px;bottom:74px;color:#cdd8f2;
+    font-size:13px;letter-spacing:.2em;
+    text-shadow:0 2px 0 rgba(0,0,0,.8), 0 0 6px rgba(0,0,0,.6);
+  }
+  body.compact .version{right:34px;bottom:52px;font-size:11px;}
+  body.short .version{right:20px;bottom:34px;font-size:10px;}
   .screen-title{color:var(--pink-soft);font-size:28px;letter-spacing:.24em;
     text-shadow:0 2px 0 #7b2a52;}
   .mbtn{
     font:inherit;font-size:20px;letter-spacing:.22em;color:var(--pink-soft);
-    background:linear-gradient(180deg,#243a5e,#1a2b48);
+    background:linear-gradient(180deg,#2b4368,#1a2b48);
     border:2px solid var(--panel-line);
-    box-shadow:0 0 0 2px #0e1a2c, inset 0 2px 0 rgba(255,255,255,.08);
+    box-shadow:0 0 0 2px #0e1a2c, inset 0 2px 0 rgba(255,255,255,.10);
     padding:12px 34px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:background .12s, color .12s;
   }
-  .mbtn:hover,.mbtn.sel{background:linear-gradient(180deg,#33507f,#243a5e);color:#fff;}
+  .mbtn:hover,.mbtn.sel{
+    background:linear-gradient(180deg,#3d5e91,#2a4370);color:#fff;
+    box-shadow:0 0 0 2px #0e1a2c, inset 0 2px 0 rgba(255,255,255,.16),
+               0 0 16px rgba(246,169,203,.30);
+  }
   .mbtn.sel{border-color:var(--pink);}
   #opt-list{display:flex;flex-direction:column;gap:7px;width:min(560px,94%);}
   .opt{
@@ -183,6 +249,15 @@
   .opt .oarrow:hover{color:var(--pink-soft);border-color:var(--pink);}
   .opt .ohint{grid-column:1 / -1;color:#8fa3cc;font-size:12px;letter-spacing:.08em;}
   body.compact .screen{gap:12px;justify-content:center;overflow-y:auto;}
+  body.compact #menu{justify-content:center;padding-top:0;padding-bottom:190px;gap:12px;}
+  body.compact .plaque-inner{padding:14px 22px;}
+  body.compact .shelf{padding:8px 24px 10px;}
+  body.compact .menu-best{font-size:13px;letter-spacing:.16em;padding:4px 14px;}
+  body.compact .ribbon{font-size:11px;letter-spacing:.1em;padding:5px 18px;}
+  body.short #menu{padding-top:8px;gap:6px;}
+  body.short .plaque-inner{padding:8px 18px;}
+  body.short .shelf{padding:6px 18px 8px;}
+  body.short .ribbon{display:none;}
   body.compact #settings{justify-content:flex-start;padding-top:16px;}
   body.compact .screen-title{font-size:20px;}
   body.compact .mbtn{font-size:16px;padding:10px 22px;}
@@ -214,6 +289,15 @@
 
   .touchpad{position:absolute;z-index:5;inset:0;display:none;}
   @media (pointer:coarse){ .touchpad{display:block;} }
+
+  /* on the menu the board, its panels and the controls step aside entirely.
+     these come last so they beat the compact and landscape layout rules. */
+  body.menu .head, body.menu .left, body.menu .boardwrap,
+  body.menu .side, body.menu .foot{display:none;}
+  body.menu #pad{display:none;}
+  body.menu #btn-pause{display:none;}
+  body.menu #touchpad{display:none;}
+  body.menu #mascot{display:none;}
 
   /* ---------- d-pad, compact layout only ---------- */
   .pad{display:none;}
@@ -305,6 +389,7 @@
 <div id="stage">
   <canvas id="scene" width="1312" height="1199"></canvas>
   <canvas id="drift" width="1312" height="1199"></canvas>
+  <canvas id="menu-art" width="1312" height="1199"></canvas>
   <canvas id="mascot" width="180" height="176"></canvas>
 
   <div class="layout">
@@ -342,7 +427,7 @@
       <div class="panel"><div class="label">BEST</div><div class="value" id="best">000000</div></div>
       <div class="panel recent"><div class="label">LAST FIVE</div><div id="recent-list"></div></div>
       <div class="panel portrait">
-        <canvas id="portrait" width="104" height="126"></canvas>
+        <canvas id="portrait" width="106" height="122"></canvas>
         <div class="script">Good Wine Brighter Days &hearts;</div>
       </div>
       <div class="panel rules">
@@ -360,12 +445,19 @@
     <div class="screen" id="menu">
       <img id="logo" alt="Flower Snake">
       <h1 class="logo-fallback" id="logo-text"><span>&hearts;</span> FLOWER SNAKE <span>&hearts;</span></h1>
-      <div class="menu-buttons">
-        <button class="mbtn" id="btn-start">START GAME</button>
-        <button class="mbtn" id="btn-settings">SETTINGS</button>
+      <div class="plaque">
+        <div class="plaque-inner">
+          <div class="menu-buttons">
+            <button class="mbtn" id="btn-start">START GAME</button>
+            <button class="mbtn" id="btn-settings">SETTINGS</button>
+          </div>
+        </div>
       </div>
-      <div class="menu-foot">A SMALL SIP FOR A LONGER JOURNEY <span class="heart">&hearts;</span></div>
-      <div class="version">v1.3.6</div>
+      <div class="shelf">
+        <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
+      </div>
+      <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
+      <div class="version">v1.6.2</div>
     </div>
 
     <div class="screen" id="settings">
@@ -650,9 +742,6 @@ const ART = {
 '.....................'
 ],
   PORTRAIT: [
-'....................................................',
-'....................................................',
-'....................................................',
 '.............................OOOO...OOOOOO..........',
 '............................OOppOO.OOpPBBOO.........',
 '...........................OOppppOOOpBBBBPOO........',
@@ -684,40 +773,37 @@ const ART = {
 'GGGGGGGGGGGGGGGGGGKKKKKKKKKKKwlGGGGGGGGGGGGDDDDDDDDO',
 'GGDDGLGKGGGGGGGGGGKKKKKKKKKKwwlGGGGGGGGGGGGDDDDDDDDO',
 'GGDDGLGKGGGGGGGGGGGKKKKKKKKwwwGGGGGGGGGGGGGDDDDDDDDO',
-'GGGGGGGGGGGGGGGGGGLKKKKKKKKwwLGGGGGGGGGGGGGDDDDDDDDO',
-'GGGGDDGGGGGGGGGGLLLLLKKKKKhhpLGGGGGGGGGGGGDDDDDDDDDD',
-'DGGKKKGGGGGGGGKKLLLLLpppBBBBpppGGGGGGGGGGDDDDGDDDDDD',
-'DKKKKKDGGGGGKKKLLLLLLpppppppppppLGGGGGGGDDDDGGDDDDDD',
-'DKKLLLKKKKKKKKLLLLLLLpppppppppppLGGGGGGGDDDDGGGDDDDD',
-'DDLLLLLKKKKKLLLLLLLLLpppppppppppLGGGGGGDDDDGGGGGDDDD',
-'OGLLLLLLLLLLLLLLLLLLLpppppppppppLGGGGGDDDDGGGGGGDDDD',
-'OOOOLLLLLLLLLLLLLLLLLLLpppppppLLGGGGGDDDDGGGGGGGGDDD',
-'...OOOLLLLLLLLLLLLLLLLLppppppLLGGGGDKKDDGGGGGGGGDDDD',
-'.....ODDDDLLLLLLLLLLLLLLLLLLLLGGDDDDDDDGGGGGGGGDDDDD',
-'.....OOOOODDDDDLLLLLLLLLLLLGGDDDKKLLLDDDGGGGGGGDDDDD',
-'.........OOOOOODDDDDDDDDDDDDDKKDDLLLLLDDGGGGGDDDDDDD',
-'..............OOOOOOOOOOOOODDDGLLLLLLLDDGGGGDDDDDDDD',
-'..........................ODGLGLLLLLLLLDGGGGDDGDDDDD',
-'..........................OOGLLLLLLLLLLDGGGGGGGGDDDO',
-'...........................OOLLLLLLLLLLDGGGGGGGGDDDO',
-'............................ODLLLLLLLLDGGGGGDDDGDDOO',
-'............................ODLLLLLLDDDGGGGGDDDDDDO.',
-'............................ODDDDDDDGGGGGGGGGDDDDOO.',
-'...........................OODGGGGGLLLGGGGGGGGDDDO..',
-'...........................ODLLLLLLLLGGGGGGGGGDDOO..',
-'..........................OODLLLLLLLLGGGGGGGGDDDO...',
-'..........................ODLLLLLLLLGGGGGGGDDDDOO...',
-'.........................OODLLLLLLLLGGGGGGDDDDOO....',
-'.........................ODLLLLLLLLLGGGGGGDDDDO.....',
-'.........................ODLLLLLLLLGGGGGGDDDDOO.....',
-'.........................ODLLLLLLLLGGGGGGDDDDO......',
-'.........................OLLLLLLLLLGGGGGGDDDDO......',
-'.........................OOOOOOOOOOOOOOOOOOOOO......'
+'GGGGGGGGGGGGGGGGGGLKKKKKKKKwwLGGGGGGGGGGGGGDDDDDDDOO',
+'GGGGDDGGGGGGGGGGLLLLLKKKKKhhpLGGGGGGGGGGGGDDDDDDDDO.',
+'DGGKKKGGGGGGGGKKLLLLLpppBBBBpppGGGGGGGGGGDDDDGDDDDO.',
+'DKKKKKDGGGGGKKKLLLLLLpppppppppppLGGGGGGGDDDDGGDDDOO.',
+'DKKLLLKKKKKKKKLLLLLLLpppppppppppLGGGGGGGDDDDGGGDDO..',
+'DDLLLLLKKKKKLLLLLLLLLpppppppppppLGGGGGGDDDDGGGGGDO..',
+'OGLLLLLLLLLLLLLLLLLLLpppppppppppLGGGGGDDDDGGGGGGOO..',
+'OOOOLLLLLLLLLLLLLLLLLLLpppppppLLGGGGGDDDDGGGGGGGO...',
+'...OOOLLLLLLLLLLLLLLLLLppppppLLGGGGDKKDDGGGGGGGOO...',
+'.....ODDDDLLLLLLLLLLLLLLLLLLLLGGDDDDDDDGGGGGGGGO....',
+'.....OOOOODDDDDLLLLLLLLLLLLGGDDDKKLLLDDDGGGGGGGO....',
+'.........OOOOOODDDDDDDDDDDDDDKKDDLLLLLDDGGGGGDOO....',
+'..............OOOOOOOOOOOOODDDGLLLLLLLDDGGGGDDO.....',
+'..........................ODGLGLLLLLLLLDGGGGDDO.....',
+'..........................OOGLLLLLLLLLLDGGGGGOO.....',
+'...........................OOLLLLLLLLLLDGGGGGO......',
+'............................ODLLLLLLLLDGGGGGOO......',
+'............................ODLLLLLLDDDGGGGGO.......',
+'............................ODDDDDDDGGGGGGGGO.......',
+'...........................OODGGGGGLLLGGGGGOO.......',
+'...........................ODLLLLLLLLGGGGGGO........',
+'..........................OODLLLLLLLLGGGGGOO........',
+'..........................ODLLLLLLLLGGGGGGO.........',
+'.........................OODLLLLLLLLGGGGGGO.........',
+'.........................ODLLLLLLLLLGGGGGOO.........',
+'.........................ODLLLLLLLLGGGGGGO..........',
+'.........................ODLLLLLLLLGGGGGOO..........',
+'.........................OLLLLLLLLLGGGGGO...........',
+'.........................OOOOOOOOOOOOOOOO...........'
 ],
   PORTRAIT_BLINK: [
-'....................................................',
-'....................................................',
-'....................................................',
 '.............................OOOO...OOOOOO..........',
 '............................OOppOO.OOpPBBOO.........',
 '...........................OOppppOOOpBBBBPOO........',
@@ -740,44 +826,44 @@ const ART = {
 '.OwDODGGGGGGGGGGGGGGGLLLLLLLLGGGGDKpBBBBBKKKpppppO..',
 '.OOOOGGGGGGGGGGGGGGGLLLLLLLLLLLGGGGpBBBBBKDDOOOOOO..',
 '...ODGGGGGGGGGGGGGGLLLLKKKKKLLLDDGGTTTTTTKDDDOOOO...',
-'...ODGGGGGGGGGGGGGGLLKKKKKKKKLLLLGGDKKKKDDDDDODDOO..',
-'..OOGGGGGGGGGGGGGGGLKKKKLLLKKKLLDDDDDDDDDDDDDDDDDO..',
-'OOOGGGGGGGGGGGGGGGGKKKGGGGGGKKKKGGGGGGDDDGGDDDDDDOO.',
-'OGGGGGGGGGGGGGGGGGKKKGGDDGGGGKKKDDGGGGGGGGGDDDDDDDO.',
-'GGGGGGGGGGGGGGGGGGGKGGGGGGGGGllGDGGGGGGGGGGDDDDDDDO.',
+'...ODGGGGGGGGGGGGGGLLKKKKKKKKKLLLGGDKKKKDDDDDODDOO..',
+'..OOGGGGGGGGGGGGGGGLKKKKLLLKKKKLDDDDDDDDDDDDDDDDDO..',
+'OOOGGGGGGGGGGGGGGGLKKKLLLLLLLKKKLLGGGGDDDGGDDDDDDOO.',
+'OGGGGGGGGGGGGGGGGGKKKGGDDGGGGlKKKDGGGGGGGGGDDDDDDDO.',
+'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGllGDGGGGGGGGGGDDDDDDDO.',
 'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGlGGGGGGGGGGGGDDDDDDDOO',
 'GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGlGGGGGGGGGGGGDDDDDDDDO',
 'GGDDGLGKGGGGGGGGGGGGGGGGGGGGGGlGGGGGGGGGGGGDDDDDDDDO',
 'GGDDGLGKGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGDDDDDDDDO',
-'GGGGGGGGGGGGGGGGGGLGGGGGGGGGGLGGGGGGGGGGGGGDDDDDDDDO',
-'GGGGDDGGGGGGGGGGLLLLLGGGGGhhpLGGGGGGGGGGGGDDDDDDDDDD',
-'DGGKKKGGGGGGGGKKLLLLLpppBBBBpppGGGGGGGGGGDDDDGDDDDDD',
-'DKKKKKDGGGGGKKKLLLLLLpppppppppppLGGGGGGGDDDDGGDDDDDD',
-'DKKLLLKKKKKKKKLLLLLLLpppppppppppLGGGGGGGDDDDGGGDDDDD',
-'DDLLLLLKKKKKLLLLLLLLLpppppppppppLGGGGGGDDDDGGGGGDDDD',
-'OGLLLLLLLLLLLLLLLLLLLpppppppppppLGGGGGDDDDGGGGGGDDDD',
-'OOOOLLLLLLLLLLLLLLLLLLLpppppppLLGGGGGDDDDGGGGGGGGDDD',
-'...OOOLLLLLLLLLLLLLLLLLppppppLLGGGGDKKDDGGGGGGGGDDDD',
-'.....ODDDDLLLLLLLLLLLLLLLLLLLLGGDDDDDDDGGGGGGGGDDDDD',
-'.....OOOOODDDDDLLLLLLLLLLLLGGDDDKKLLLDDDGGGGGGGDDDDD',
-'.........OOOOOODDDDDDDDDDDDDDKKDDLLLLLDDGGGGGDDDDDDD',
-'..............OOOOOOOOOOOOODDDGLLLLLLLDDGGGGDDDDDDDD',
-'..........................ODGLGLLLLLLLLDGGGGDDGDDDDD',
-'..........................OOGLLLLLLLLLLDGGGGGGGGDDDO',
-'...........................OOLLLLLLLLLLDGGGGGGGGDDDO',
-'............................ODLLLLLLLLDGGGGGDDDGDDOO',
-'............................ODLLLLLLDDDGGGGGDDDDDDO.',
-'............................ODDDDDDDGGGGGGGGGDDDDOO.',
-'...........................OODGGGGGLLLGGGGGGGGDDDO..',
-'...........................ODLLLLLLLLGGGGGGGGGDDOO..',
-'..........................OODLLLLLLLLGGGGGGGGDDDO...',
-'..........................ODLLLLLLLLGGGGGGGDDDDOO...',
-'.........................OODLLLLLLLLGGGGGGDDDDOO....',
-'.........................ODLLLLLLLLLGGGGGGDDDDO.....',
-'.........................ODLLLLLLLLGGGGGGDDDDOO.....',
-'.........................ODLLLLLLLLGGGGGGDDDDO......',
-'.........................OLLLLLLLLLGGGGGGDDDDO......',
-'.........................OOOOOOOOOOOOOOOOOOOOO......'
+'GGGGGGGGGGGGGGGGGGLGGGGGGGGGGLGGGGGGGGGGGGGDDDDDDDOO',
+'GGGGDDGGGGGGGGGGLLLLLGGGGGhhpLGGGGGGGGGGGGDDDDDDDDO.',
+'DGGKKKGGGGGGGGKKLLLLLpppBBBBpppGGGGGGGGGGDDDDGDDDDO.',
+'DKKKKKDGGGGGKKKLLLLLLpppppppppppLGGGGGGGDDDDGGDDDOO.',
+'DKKLLLKKKKKKKKLLLLLLLpppppppppppLGGGGGGGDDDDGGGDDO..',
+'DDLLLLLKKKKKLLLLLLLLLpppppppppppLGGGGGGDDDDGGGGGDO..',
+'OGLLLLLLLLLLLLLLLLLLLpppppppppppLGGGGGDDDDGGGGGGOO..',
+'OOOOLLLLLLLLLLLLLLLLLLLpppppppLLGGGGGDDDDGGGGGGGO...',
+'...OOOLLLLLLLLLLLLLLLLLppppppLLGGGGDKKDDGGGGGGGOO...',
+'.....ODDDDLLLLLLLLLLLLLLLLLLLLGGDDDDDDDGGGGGGGGO....',
+'.....OOOOODDDDDLLLLLLLLLLLLGGDDDKKLLLDDDGGGGGGGO....',
+'.........OOOOOODDDDDDDDDDDDDDKKDDLLLLLDDGGGGGDOO....',
+'..............OOOOOOOOOOOOODDDGLLLLLLLDDGGGGDDO.....',
+'..........................ODGLGLLLLLLLLDGGGGDDO.....',
+'..........................OOGLLLLLLLLLLDGGGGGOO.....',
+'...........................OOLLLLLLLLLLDGGGGGO......',
+'............................ODLLLLLLLLDGGGGGOO......',
+'............................ODLLLLLLDDDGGGGGO.......',
+'............................ODDDDDDDGGGGGGGGO.......',
+'...........................OODGGGGGLLLGGGGGOO.......',
+'...........................ODLLLLLLLLGGGGGGO........',
+'..........................OODLLLLLLLLGGGGGOO........',
+'..........................ODLLLLLLLLGGGGGGO.........',
+'.........................OODLLLLLLLLGGGGGGO.........',
+'.........................ODLLLLLLLLLGGGGGOO.........',
+'.........................ODLLLLLLLLGGGGGGO..........',
+'.........................ODLLLLLLLLGGGGGOO..........',
+'.........................OLLLLLLLLLGGGGGO...........',
+'.........................OOOOOOOOOOOOOOOO...........'
 ],
   MASCOT: [
 '..............................................................................',
@@ -1539,7 +1625,7 @@ const ART = {
 ]
 };
 
-const ANCHOR = {"MASCOT": [37.5, 43.0], "HEAD": [21.0, 25.0], "HEAD_CLOSED": [21.0, 25.0], "BODY": [13.0, 14.0], "TAIL": [11.5, 12.5], "GLASS": [10.0, 16.0], "BLOOM": [10.5, 10.5], "PORTRAIT": [26.0, 33.0], "CORNER": [17.0, 17.0], "GLASS_EMPTY": [10.0, 16.0], "GLASS_S": [5.5, 9.5], "GLASS_S_EMPTY": [5.5, 9.5], "KRZYSZTOF_REACH": [17.5, 14.5], "KRZYSZTOF_LIFT": [17.5, 14.5], "KRZYSZTOF_DRINK": [17.5, 14.5], "KRZYSZTOF_HAPPY": [17.5, 14.5], "KRZYSZTOF_W0": [17.5, 14.5], "KRZYSZTOF_D0": [17.5, 14.5], "KRZYSZTOF_W1": [17.5, 14.5], "KRZYSZTOF_D1": [17.5, 14.5], "KRZYSZTOF_W2": [17.5, 14.5], "KRZYSZTOF_D2": [17.5, 14.5], "KRZYSZTOF_W3": [17.5, 14.5], "KRZYSZTOF_D3": [17.5, 14.5], "KRZYSZTOF_BLINK": [17.5, 14.5], "KRZYSZTOF_DBLINK": [17.5, 14.5], "KRZYSZTOF_SAD": [17.5, 14.5], "KRZYSZTOF_SHELL": [17.5, 14.5], "KRZYSZTOF_SLEEP": [17.5, 14.5], "PORTRAIT_BLINK": [26.0, 33.0], "HEAD_HURT": [21.0, 25.0], "BOOM": [17.0, 17.0], "GLASS_RICH0": [10.0, 16.0], "GLASS_RICH1": [10.0, 16.0], "GLASS_RICH2": [10.0, 16.0], "GLASS_RICH3": [10.0, 16.0], "GLASS_RICH4": [10.0, 16.0], "GLASS_RICH5": [10.0, 16.0], "GLASS_RICH6": [10.0, 16.0], "GLASS_RICH7": [10.0, 16.0], "GRAIL": [11.0, 15.0], "BLOOM_MID": [7.5, 7.5], "BLOOM_BIG": [8.5, 8.5]};
+const ANCHOR = {"MASCOT": [37.5, 43.0], "HEAD": [21.0, 25.0], "HEAD_CLOSED": [21.0, 25.0], "BODY": [13.0, 14.0], "TAIL": [11.5, 12.5], "GLASS": [10.0, 16.0], "BLOOM": [10.5, 10.5], "PORTRAIT": [26.0, 30.0], "CORNER": [17.0, 17.0], "GLASS_EMPTY": [10.0, 16.0], "GLASS_S": [5.5, 9.5], "GLASS_S_EMPTY": [5.5, 9.5], "KRZYSZTOF_REACH": [17.5, 14.5], "KRZYSZTOF_LIFT": [17.5, 14.5], "KRZYSZTOF_DRINK": [17.5, 14.5], "KRZYSZTOF_HAPPY": [17.5, 14.5], "KRZYSZTOF_W0": [17.5, 14.5], "KRZYSZTOF_D0": [17.5, 14.5], "KRZYSZTOF_W1": [17.5, 14.5], "KRZYSZTOF_D1": [17.5, 14.5], "KRZYSZTOF_W2": [17.5, 14.5], "KRZYSZTOF_D2": [17.5, 14.5], "KRZYSZTOF_W3": [17.5, 14.5], "KRZYSZTOF_D3": [17.5, 14.5], "KRZYSZTOF_BLINK": [17.5, 14.5], "KRZYSZTOF_DBLINK": [17.5, 14.5], "KRZYSZTOF_SAD": [17.5, 14.5], "KRZYSZTOF_SHELL": [17.5, 14.5], "KRZYSZTOF_SLEEP": [17.5, 14.5], "PORTRAIT_BLINK": [26.0, 30.0], "HEAD_HURT": [21.0, 25.0], "BOOM": [17.0, 17.0], "GLASS_RICH0": [10.0, 16.0], "GLASS_RICH1": [10.0, 16.0], "GLASS_RICH2": [10.0, 16.0], "GLASS_RICH3": [10.0, 16.0], "GLASS_RICH4": [10.0, 16.0], "GLASS_RICH5": [10.0, 16.0], "GLASS_RICH6": [10.0, 16.0], "GLASS_RICH7": [10.0, 16.0], "GRAIL": [11.0, 15.0], "BLOOM_MID": [7.5, 7.5], "BLOOM_BIG": [8.5, 8.5]};
 
 function draw(ctx, name, x, y, s, mirror){
   const art = ART[name], w = art[0].length;
@@ -1649,6 +1735,8 @@ function reset(){
   sync();
 }
 function sync(){
+  const mb = document.getElementById('menu-best-val');
+  if(mb) mb.textContent = pad6(best);
   document.getElementById('score').textContent = pad6(score);
   document.getElementById('length').textContent = snake.length;
   document.getElementById('best').textContent = pad6(best);
@@ -1721,7 +1809,9 @@ function contested(x, y){
 
 function celebrate(cx, cy, prize){
   blinkUntil = nowMs + (prize ? 520 : 320);
-  pops.push({x:cx, y:cy - 26, t0:nowMs, text: prize ? '+50' : '+20'});
+  pops.push({x:cx, y:cy - (prize ? 30 : 26), t0:nowMs,
+             text: prize ? '+50' : '+20',
+             big: prize, tone: prize ? 'white' : 'pink', life: prize ? 1250 : 850});
   spills.push({x:cx, y:cy, t0:nowMs});
   for(let i=0;i<(prize ? 16 : 8);i++){
     const a = -Math.PI/2 + (Math.random()-0.5)*2.4;
@@ -1741,21 +1831,31 @@ function bite(){
   krzysztof.lungeT = nowMs;
   krzysztof.lastBite = nowMs;
   hurtUntil = nowMs + 900;
-  booms.push({x: krzysztof.x*CELL + CELL/2, y: krzysztof.y*CELL + CELL/2, t0: nowMs, big: true});
-  lost.forEach((sg,i) => {
-    const cx = sg.x*CELL + CELL/2, cy = sg.y*CELL + CELL/2;
-    ghosts.push({x:cx, y:cy, t0:nowMs, i});          // the segments fade out where they were
-    booms.push({x:cx, y:cy, t0: nowMs + 90 + i*90});
-    for(let k=0;k<7;k++){
+  // the loud half of the feedback happens where he bit you, because that is where you are looking
+  const kx = krzysztof.x*CELL + CELL/2, ky = krzysztof.y*CELL + CELL/2;
+  booms.push({x:kx, y:ky, t0:nowMs, big:true});
+  for(let i = 0; i < take; i++){
+    booms.push({x: kx + (i - (take-1)/2)*34, y: ky - 16 - i*4, t0: nowMs + 110 + i*100});
+    for(let k = 0; k < 6; k++){
       const a = -Math.PI/2 + (Math.random()-0.5)*2.6;
-      const sp = 0.06 + Math.random()*0.12;
-      bits.push({x:cx, y:cy, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, t0:nowMs,
+      const sp = 0.07 + Math.random()*0.13;
+      bits.push({x:kx, y:ky - 8, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, t0:nowMs + i*70,
                  col: i%2 ? PAL.G : PAL.l});
     }
+  }
+  pops.push({x:kx, y:ky - 74, t0:nowMs + 140, text:'-' + take,
+             tone:'mint', big:true, life:1250});
+
+  // and a quiet trace at the tail, so you can still see which part actually went
+  lost.forEach((sg,i) => {
+    ghosts.push({x: sg.x*CELL + CELL/2, y: sg.y*CELL + CELL/2, t0: nowMs, i});
+    for(let k = 0; k < 3; k++){
+      const a = -Math.PI/2 + (Math.random()-0.5)*2.2;
+      const sp = 0.05 + Math.random()*0.08;
+      bits.push({x: sg.x*CELL + CELL/2, y: sg.y*CELL + CELL/2,
+                 vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, t0:nowMs, col: PAL.l});
+    }
   });
-  const t0 = lost[0];
-  pops.push({x:t0.x*CELL + CELL/2, y:t0.y*CELL + CELL/2 - 30, t0:nowMs,
-             text:'-' + take, tone:'mint', big:true});
   sfx('bite');
   sync();
   return true;
@@ -2346,9 +2446,10 @@ function render(t){
     bx.globalAlpha = 1;
   });
 
-  pops = pops.filter(q => t - q.t0 < 850);
+  pops = pops.filter(q => t - q.t0 < (q.life || 850) || t < q.t0);
   pops.forEach(q => {
-    const a = (t - q.t0)/850;
+    if(t < q.t0) return;
+    const a = (t - q.t0)/(q.life || 850);
     bx.globalAlpha = Math.max(0, 1 - a*a);
     if(q.kind === 'z'){
       tinyText(bx, 'Z', q.x + a*16, q.y - a*40, 3 + Math.round(a*2), PAL.w);
@@ -2358,7 +2459,13 @@ function render(t){
       bx.fillRect(x,y,u,u); bx.fillRect(x+2*u,y,u,u);
       bx.fillRect(x-u,y+u,5*u,u); bx.fillRect(x,y+2*u,3*u,u); bx.fillRect(x+u,y+3*u,u,u);
     } else {
-      tinyText(bx, q.text, q.x, q.y - a*30, q.big ? 5 : 3, q.tone === 'mint' ? PAL.l : PAL.P);
+      const col = q.tone === 'mint' ? '#c9f5e9' : (q.tone === 'white' ? '#ffffff' : PAL.P);
+      const rise = q.big ? 52 : 30;
+      if(q.big){                                   // a shadow, so it reads over a white burst
+        tinyText(bx, q.text, q.x + 3, q.y - a*rise + 3, 5,
+                 q.tone === 'white' ? PAL.p : '#0b1933');
+      }
+      tinyText(bx, q.text, q.x, q.y - a*rise, q.big ? 5 : 3, col);
     }
     bx.globalAlpha = 1;
   });
@@ -2499,6 +2606,7 @@ let screen = 'menu', menuSel = 0, optSel = 0;
 function showScreen(name){
   screen = name;
   document.getElementById('menu').classList.toggle('on', name === 'menu');
+  document.body.classList.toggle('menu', name === 'menu');
   document.getElementById('settings').classList.toggle('on', name === 'settings');
   if(name !== 'game' && state === 'run') state = 'paused';   // leaving ends the run
   if(name === 'menu') paintMenuSel();
@@ -2772,11 +2880,39 @@ document.querySelectorAll('.corner').forEach((cv,i) => {
   g.restore();
 });
 
+// the menu's own decoration: the snake on one side, Krzysztof dozing on the other
+(function(){
+  const sn = document.getElementById('menu-snake');
+  if(sn){
+    const g = sn.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    draw(g, 'PORTRAIT', 0, 8, 3);
+  }
+  const kr = document.getElementById('menu-krz');
+  if(kr){
+    const g = kr.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    stamp(g, 'KRZYSZTOF_SLEEP', 76, 56, 3);
+  }
+  document.querySelectorAll('.menu-corner').forEach((cv,i) => {
+    const g = cv.getContext('2d');
+    g.imageSmoothingEnabled = false;
+    g.save();
+    if(i === 1){ g.translate(cv.width, 0); g.scale(-1, 1); }
+    g.fillStyle = '#3e9a8f';
+    [[34,16,16,6],[16,34,6,16]].forEach(([x,y,w,h]) => g.fillRect(x,y,w,h));
+    stamp(g, 'BLOOM', 20, 20, 2);
+    stamp(g, 'BLOOM', 42, 30, 1);
+    stamp(g, 'BLOOM', 28, 44, 1);
+    g.restore();
+  });
+})();
+
 let portraitBlink = false, nextBlink = 3000;
 function paintPortrait(blink){
   const g = document.getElementById('portrait').getContext('2d');
   g.imageSmoothingEnabled = false;
-  g.clearRect(0,0,104,126);
+  g.clearRect(0,0,106,122);
   draw(g, blink ? 'PORTRAIT_BLINK' : 'PORTRAIT', 0, 0, 2);
 }
 function tickPortrait(t){
@@ -2857,6 +2993,141 @@ function paintDrift(t){
     y = ((y % (driftH+80)) + driftH+80) % (driftH+80) - 40;
     stamp(driftCtx, 'BLOOM', Math.round(x), Math.round(y), p2.size);
   });
+}
+
+
+/* ---------------- the menu's own scene ---------------- */
+function paintMenuArt(W, H){
+  const cv = document.getElementById('menu-art');
+  if(!cv) return;
+  cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  g.imageSmoothingEnabled = false;
+  g.clearRect(0,0,W,H);
+  const wide = W > 700;
+  const S = wide ? 1 : 0.62;                       // one dial for the whole scene
+
+  const BARK = '#5c3b2e', BARK_HI = '#7d5240', BARK_LO = '#3f2820';
+  const LOTUS = '#f6b3cd', LOTUS_HI = '#ffd3e4', LOTUS_LO = '#d97fa6';
+  const GLOW = '#ffc2d2';
+
+  let seed = 20260903;
+  const rnd = () => { seed = (seed*1103515245 + 12345) & 0x7fffffff; return seed/0x7fffffff; };
+
+  // ---- a woody branch, drawn as a chain of blocks so it stays pixel-crisp ----
+  function branch(pts, th){
+    for(let i = 0; i < pts.length-1; i++){
+      const [x0,y0] = pts[i], [x1,y1] = pts[i+1];
+      const steps = Math.ceil(Math.max(Math.abs(x1-x0), Math.abs(y1-y0)) / 3);
+      for(let k = 0; k <= steps; k++){
+        const u = k/steps;
+        const x = Math.round(x0 + (x1-x0)*u), y = Math.round(y0 + (y1-y0)*u);
+        const t = Math.max(3, Math.round(th * (1 - 0.35*u)));
+        g.fillStyle = BARK_LO; g.fillRect(x-t, y-t, t*2+2, t*2+2);
+        g.fillStyle = BARK;    g.fillRect(x-t+1, y-t+1, t*2, t*2);
+        g.fillStyle = BARK_HI; g.fillRect(x-t+1, y-t+1, t, Math.max(2, t*0.7));
+      }
+    }
+  }
+
+  // ---- a cluster of blossoms, the way they grow on a bough ----
+  function cluster(x, y, n, sc){
+    for(let i = 0; i < n; i++){
+      const a = rnd()*6.28, r = rnd()*16*sc;
+      stamp(g, rnd() < 0.5 ? 'BLOOM_MID' : 'BLOOM',
+            x + Math.cos(a)*r, y + Math.sin(a)*r,
+            Math.max(1, Math.round((rnd() < 0.45 ? 3 : 2) * sc)));
+    }
+  }
+
+  // ---- a paper lantern on a thread ----
+  function lantern(x, y, len, sc){
+    const w = Math.round(16*sc), h = Math.round(20*sc);
+    g.fillStyle = BARK_LO; g.fillRect(x-1, y, 2, len);
+    const ly = y + len;
+    g.globalAlpha = 0.22; g.fillStyle = GLOW;
+    g.fillRect(x - w, ly - 4, w*2, h + 12);
+    g.globalAlpha = 1;
+    g.fillStyle = '#8a4a63'; g.fillRect(x - w/2 - 2, ly - 3, w + 4, 4);
+    g.fillStyle = LOTUS;     g.fillRect(x - w/2, ly, w, h);
+    g.fillStyle = LOTUS_HI;  g.fillRect(x - w/2 + 2, ly + 2, Math.max(2, w*0.3), h - 4);
+    g.fillStyle = '#fff2b8'; g.fillRect(x - 2, ly + h*0.35, 4, h*0.3);
+    g.fillStyle = '#8a4a63'; g.fillRect(x - w/2 - 2, ly + h, w + 4, 4);
+  }
+
+  // ---- a lotus pad for someone to sit on ----
+  function lotus(cx, cy, w, sc){
+    const pw = Math.round(26*sc), ph = Math.round(15*sc);
+    // a back row of petals, then a front row overlapping it
+    for(let i = -2; i <= 2; i++){
+      const x = cx + i*pw*0.92, drop = Math.abs(i)*4;
+      g.fillStyle = LOTUS_LO; g.fillRect(x - pw/2, cy - ph*0.55 + drop, pw, ph);
+      g.fillStyle = LOTUS;    g.fillRect(x - pw/2 + 2, cy - ph*0.55 + drop, pw - 4, ph - 4);
+    }
+    for(let i = -2; i <= 2; i++){
+      const x = cx + i*pw*0.78 + pw*0.34, drop = Math.abs(i)*4;
+      g.fillStyle = LOTUS_LO; g.fillRect(x - pw/2, cy + drop, pw, ph);
+      g.fillStyle = LOTUS;    g.fillRect(x - pw/2 + 2, cy + drop, pw - 4, ph - 3);
+      g.fillStyle = LOTUS_HI; g.fillRect(x - pw/2 + 4, cy + drop + 1, pw*0.36, 3);
+    }
+    g.fillStyle = LOTUS_LO; g.fillRect(cx - w/2, cy + ph + 3, w, Math.round(6*sc));
+    g.fillStyle = LOTUS;    g.fillRect(cx - w/2 + 3, cy + ph + 3, w - 6, 3);
+  }
+
+  // ================= the frame of vines =================
+  const m = Math.round(26*S);
+  branch([[-20, m+10],[W*0.22, m-6],[W*0.5, m+14],[W*0.78, m-6],[W+20, m+10]], Math.round(7*S));
+  branch([[-20, H-m-6],[W*0.26, H-m+10],[W*0.52, H-m-8],[W*0.8, H-m+10],[W+20, H-m-4]], Math.round(8*S));
+  branch([[m+8, -20],[m-8, H*0.28],[m+12, H*0.55],[m-6, H*0.8],[m+8, H+20]], Math.round(7*S));
+  branch([[W-m-8, -20],[W-m+10, H*0.3],[W-m-10, H*0.58],[W-m+8, H*0.82],[W-m-6, H+20]], Math.round(7*S));
+  // corner boughs reaching inward
+  branch([[m, m],[W*0.16, m+52*S],[W*0.26, m+18*S]], Math.round(6*S));
+  branch([[W-m, m],[W*0.84, m+52*S],[W*0.74, m+18*S]], Math.round(6*S));
+  branch([[m, H-m],[W*0.16, H-m-54*S]], Math.round(6*S));
+  branch([[W-m, H-m],[W*0.84, H-m-54*S]], Math.round(6*S));
+
+  for(let x = -10; x < W + 30; x += Math.round(84*S)){
+    cluster(x, m + (rnd()*16-8)*S, wide ? 4 : 3, S);
+    cluster(x + 40*S, H - m + (rnd()*14-7)*S, wide ? 4 : 3, S);
+  }
+  for(let y = 60*S; y < H - 60*S; y += Math.round((wide ? 168 : 104)*S)){
+    cluster(m + (rnd()*14-7)*S, y, 3, S);
+    cluster(W - m + (rnd()*14-7)*S, y + 40*S, 3, S);
+  }
+  cluster(W*0.18, m + 40*S, 6, S*1.1);
+  cluster(W*0.82, m + 40*S, 6, S*1.1);
+
+  // ================= lanterns =================
+  if(wide){
+    lantern(W*0.26, m + 10, 74, S);
+    lantern(W*0.155, m + 4, 128, S*0.85);
+    lantern(W*0.74, m + 10, 96, S);
+    lantern(W*0.85, m + 4, 60, S*0.85);
+  } else {
+    lantern(W*0.16, m + 6, 62, S);
+    lantern(W*0.84, m + 6, 84, S);
+  }
+
+  // ================= the terrace =================
+  if(wide){
+    const base = H - 232;
+    draw(g, 'PORTRAIT', 150, base - 226, 4);
+    lotus(254, base + 4, 220, 1);            // she rises out of the lotus
+    stamp(g, 'KRZYSZTOF_HAPPY', W - 258, base - 58, 4);
+    stamp(g, 'GLASS_S', W - 166, base - 104, 4);
+    lotus(W - 254, base + 4, 220, 1);
+    // a long pad for the glasses to stand on, between the two of them
+    lotus(W/2, base + 4, 470, 1);
+    for(let i = 0; i < 6; i++) stamp(g, 'GLASS', W/2 - 200 + i*80, base - 6, 2);
+  } else {
+    const base = H - 58;                    // low enough to overlap the bottom vines
+    draw(g, 'PORTRAIT', 46, base - 110, 2);
+    lotus(100, base + 2, 150, 0.78);         // she rises out of the lotus
+    lotus(W - 100, base + 2, 150, 0.78);
+    stamp(g, 'KRZYSZTOF_HAPPY', W - 112, base - 32, 2);
+    stamp(g, 'GLASS_S', W - 58, base - 58, 2);
+    for(let i = 0; i < 4; i++) stamp(g, 'GLASS', W*0.36 + i*42, base - 28, 2);
+  }
 }
 
 function paintScene(W, H){
@@ -2945,6 +3216,7 @@ function fit(){
     document.body.classList.toggle('short', mode === 'short');
     seedDrift(SIZES[mode][0], SIZES[mode][1]);
     paintScene(SIZES[mode][0], SIZES[mode][1]);
+    paintMenuArt(SIZES[mode][0], SIZES[mode][1]);
   }
   const dim = SIZES[mode];
   let s = Math.min(CAPS[mode], Math.min(window.innerWidth/(dim[0]+10), window.innerHeight/(dim[1]+10)));
