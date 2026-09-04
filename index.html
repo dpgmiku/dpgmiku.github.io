@@ -32,6 +32,9 @@
   #menu-art{position:absolute;inset:0;z-index:4;pointer-events:none;display:none;}
   body.menu #menu-art{display:block;}
   #mascot{position:absolute;left:-4px;bottom:26px;z-index:1;}
+  /* Krzysztof, life size, leaning out of the blossoms beside the board */
+  #krz-cam{position:absolute;left:-6px;top:37%;z-index:3;pointer-events:none;}
+  body.compact #krz-cam, body.short #krz-cam, body.menu #krz-cam{display:none;}
 
   .layout{
     position:relative;z-index:2;height:100%;
@@ -390,6 +393,7 @@
   <canvas id="scene" width="1312" height="1199"></canvas>
   <canvas id="drift" width="1312" height="1199"></canvas>
   <canvas id="menu-art" width="1312" height="1199"></canvas>
+  <canvas id="krz-cam" width="132" height="128"></canvas>
   <canvas id="mascot" width="180" height="176"></canvas>
 
   <div class="layout">
@@ -457,7 +461,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.6.2</div>
+      <div class="version">v1.7.1</div>
     </div>
 
     <div class="screen" id="settings">
@@ -2489,6 +2493,7 @@ function frame(now){
     }
   }
   render(now);
+  paintKrzCam(now);
   paintDrift(now);
   tickPortrait(now);
   requestAnimationFrame(frame);
@@ -2995,6 +3000,77 @@ function paintDrift(t){
   });
 }
 
+
+/* ---------------- Krzysztof's face, in a frame beside the board ----------------
+   A status portrait in the old shooter tradition: mostly still, and it only
+   changes when something actually happens to him. */
+let camX = -1, camCtx = null, camFace = '', camHeld = 0;
+
+// where each frame keeps his head, so the window can be centred on it
+const FACE_AT = {
+  KRZYSZTOF_W0:[28,13.7], KRZYSZTOF_W1:[28,13.0], KRZYSZTOF_BLINK:[28,13.7],
+  KRZYSZTOF_D0:[28,13.7], KRZYSZTOF_DBLINK:[28,13.7], KRZYSZTOF_SAD:[28,13.0],
+  KRZYSZTOF_DRINK:[28.4,11.6], KRZYSZTOF_HAPPY:[28.4,11.6],
+  KRZYSZTOF_SLEEP:[28.6,20.4], KRZYSZTOF_SHELL:[13,12]
+};
+
+function faceFor(t){
+  if(!krzysztof) return 'KRZYSZTOF_SLEEP';                 // away, dozing somewhere
+  const drunk = krzysztof.drank > 0;
+  if(t - (krzysztof.lungeT || -1e9) < 420) return 'KRZYSZTOF_DRINK';   // mid-bite
+  switch(krzysztof.state){
+    case 'sleep': return 'KRZYSZTOF_SLEEP';
+    case 'hide':  return 'KRZYSZTOF_SHELL';
+    case 'sad':   return 'KRZYSZTOF_SAD';
+    case 'sip': {
+      const k = sipAt(t - krzysztof.t0);
+      return k.f === 'KRZYSZTOF_REACH' || k.f === 'KRZYSZTOF_LIFT' ? 'KRZYSZTOF_W0' : k.f;
+    }
+    default:
+      // a slow blink is the only idle movement
+      if(((t + krzysztof.seed) % 4200) < 130) return drunk ? 'KRZYSZTOF_DBLINK' : 'KRZYSZTOF_BLINK';
+      return drunk ? 'KRZYSZTOF_D0' : 'KRZYSZTOF_W0';
+  }
+}
+
+function paintKrzCam(t){
+  const cv = document.getElementById('krz-cam');
+  if(!cv || mode !== 'wide') return;
+  if(!camCtx){ camCtx = cv.getContext('2d'); camCtx.imageSmoothingEnabled = false; }
+  const g = camCtx, W = cv.width, H = cv.height;
+
+  const wants = (screen === 'game' && krzysztof &&
+                 !(krzysztof.state === 'peek' && (t - krzysztof.t0) < WARN_MS)) ? 0 : -1;
+  camX += (wants - camX) * 0.12;
+  if(camX < -0.99 && wants === -1){ g.clearRect(0,0,W,H); return; }
+
+  const face = faceFor(t);
+  g.clearRect(0,0,W,H);
+
+  const ox = Math.round(camX * (W + 12));
+  const fx = 8 + ox, fy = 8, fw = W - 22, fh = H - 22;
+
+  // the window itself, in the same furniture as the score panels
+  g.fillStyle = '#0f1a2e'; g.fillRect(fx-4, fy-4, fw+8, fh+8);
+  g.fillStyle = '#4c5a92'; g.fillRect(fx-2, fy-2, fw+4, fh+4);
+  g.fillStyle = '#16243d'; g.fillRect(fx, fy, fw, fh);
+
+  // his head, clipped to the window
+  g.save();
+  g.beginPath(); g.rect(fx, fy, fw, fh); g.clip();
+  const at = FACE_AT[face] || FACE_AT.KRZYSZTOF_W0;
+  const s = 6;
+  const cx = fx + fw/2 - (at[0] - 17.5)*s;
+  const cy = fy + fh/2 - (at[1] - 14.5)*s;
+  stamp(g, face, cx, cy, s);
+  if(face === 'KRZYSZTOF_SLEEP' && ((t/900)|0) % 2)
+    tinyText(g, 'Z', fx + fw - 18, fy + 16, 3, PAL.w);
+  g.restore();
+
+  // a couple of blossoms tucked over the frame's edge
+  stamp(g, 'BLOOM_MID', fx - 2, fy + 6, 2);
+  stamp(g, 'BLOOM', fx + fw + 2, fy + fh - 10, 2);
+}
 
 /* ---------------- the menu's own scene ---------------- */
 function paintMenuArt(W, H){
