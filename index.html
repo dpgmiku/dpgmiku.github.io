@@ -21,12 +21,13 @@
     background:var(--night);
     font-family:ui-monospace,"SFMono-Regular",Menlo,Consolas,"DejaVu Sans Mono",monospace;
     color:var(--ink);
-    display:flex;align-items:flex-start;justify-content:center;
+    display:block;position:relative;
     overflow:hidden;touch-action:none;
   }
   canvas{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
 
-  #stage{position:relative;width:1312px;height:1199px;transform-origin:top center;}
+  #stage{position:absolute;left:50%;top:50%;width:1312px;height:1199px;
+    transform-origin:center center;}
   #scene{position:absolute;inset:0;z-index:0;}
   #drift{position:absolute;inset:0;z-index:1;pointer-events:none;}
   #menu-art{position:absolute;inset:0;z-index:4;pointer-events:none;display:none;}
@@ -213,8 +214,11 @@
     font-size:13px;letter-spacing:.2em;
     text-shadow:0 2px 0 rgba(0,0,0,.8), 0 0 6px rgba(0,0,0,.6);
   }
-  body.compact .version{right:34px;bottom:52px;font-size:11px;}
-  body.short .version{right:20px;bottom:34px;font-size:10px;}
+  /* on a phone the corner is where the terrace lives, so it sits in the flow instead */
+  body.compact .version, body.short .version{
+    position:static;right:auto;bottom:auto;margin-top:2px;
+    font-size:11px;letter-spacing:.22em;color:#a9b8dd;
+  }
   .screen-title{color:var(--pink-soft);font-size:28px;letter-spacing:.24em;
     text-shadow:0 2px 0 #7b2a52;}
   .mbtn{
@@ -252,7 +256,7 @@
   .opt .oarrow:hover{color:var(--pink-soft);border-color:var(--pink);}
   .opt .ohint{grid-column:1 / -1;color:#8fa3cc;font-size:12px;letter-spacing:.08em;}
   body.compact .screen{gap:12px;justify-content:center;overflow-y:auto;}
-  body.compact #menu{justify-content:center;padding-top:0;padding-bottom:190px;gap:12px;}
+  body.compact #menu{justify-content:center;padding-top:0;padding-bottom:158px;gap:12px;}
   body.compact .plaque-inner{padding:14px 22px;}
   body.compact .shelf{padding:8px 24px 10px;}
   body.compact .menu-best{font-size:13px;letter-spacing:.16em;padding:4px 14px;}
@@ -461,7 +465,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.7.1</div>
+      <div class="version">v1.7.4</div>
     </div>
 
     <div class="screen" id="settings">
@@ -3192,9 +3196,7 @@ function paintMenuArt(W, H){
     stamp(g, 'KRZYSZTOF_HAPPY', W - 258, base - 58, 4);
     stamp(g, 'GLASS_S', W - 166, base - 104, 4);
     lotus(W - 254, base + 4, 220, 1);
-    // a long pad for the glasses to stand on, between the two of them
-    lotus(W/2, base + 4, 470, 1);
-    for(let i = 0; i < 6; i++) stamp(g, 'GLASS', W/2 - 200 + i*80, base - 6, 2);
+
   } else {
     const base = H - 58;                    // low enough to overlap the bottom vines
     draw(g, 'PORTRAIT', 46, base - 110, 2);
@@ -3202,7 +3204,6 @@ function paintMenuArt(W, H){
     lotus(W - 100, base + 2, 150, 0.78);
     stamp(g, 'KRZYSZTOF_HAPPY', W - 112, base - 32, 2);
     stamp(g, 'GLASS_S', W - 58, base - 58, 2);
-    for(let i = 0; i < 4; i++) stamp(g, 'GLASS', W*0.36 + i*42, base - 28, 2);
   }
 }
 
@@ -3295,14 +3296,14 @@ function fit(){
     paintMenuArt(SIZES[mode][0], SIZES[mode][1]);
   }
   const dim = SIZES[mode];
-  let s = Math.min(CAPS[mode], Math.min(window.innerWidth/(dim[0]+10), window.innerHeight/(dim[1]+10)));
+  let s = Math.min(CAPS[mode], Math.min(window.innerWidth/(dim[0]+6), window.innerHeight/(dim[1]+6)));
   // land one sprite pixel on a whole number of device pixels when that is close by
   const dpr = window.devicePixelRatio || 1;
   const step = 1/(2*dpr);
   const near = Math.round(s/step)*step;
   if(near > 0 && Math.abs(near - s)/s < 0.12 && near <= CAPS[mode] &&
      near*dim[0] <= window.innerWidth && near*dim[1] <= window.innerHeight) s = near;
-  stage.style.transform = 'scale(' + s + ')';
+  stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
 }
 function autoPause(){
   if(screen === 'game' && state === 'run'){
