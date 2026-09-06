@@ -301,21 +301,34 @@
      these come last so they beat the compact and landscape layout rules. */
   body.menu .head, body.menu .left, body.menu .boardwrap,
   body.menu .side, body.menu .foot{display:none;}
-  body.menu #pad{display:none;}
+  body.menu #pad, body.menu #pad-turn{display:none;}
   body.menu #btn-pause{display:none;}
   body.menu #touchpad{display:none;}
   body.menu #mascot{display:none;}
 
   /* ---------- d-pad, compact layout only ---------- */
-  .pad{display:none;}
-  body.compact .pad{
+  .pad, .turnpad{display:none;}
+  .turnpad button{
+    font:inherit;font-size:34px;color:var(--mint);
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:2px solid var(--panel-line);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.07), 0 3px 0 rgba(0,0,0,.3);
+    width:200px;height:96px;cursor:pointer;touch-action:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .turnpad button:active{background:#3a4f78;color:var(--pink-soft);}
+  body.compact.ctl-turn .turnpad, body.short.ctl-turn .turnpad{
+    display:flex;order:3;gap:14px;justify-content:center;margin-top:4px;
+  }
+  body.short.ctl-turn .turnpad button{width:130px;height:58px;font-size:26px;}
+  body.compact.ctl-pad .pad{
     display:grid;order:3;
-    grid-template-columns:repeat(3,74px);
-    grid-template-rows:repeat(2,68px);
-    gap:8px;justify-content:center;margin-top:4px;
+    grid-template-columns:repeat(3,132px);
+    grid-template-rows:repeat(2,96px);
+    gap:10px;justify-content:center;margin-top:2px;
   }
   .pad button{
-    font:inherit;font-size:26px;color:var(--mint);
+    font:inherit;font-size:36px;color:var(--mint);
     background:linear-gradient(180deg,var(--panel),var(--panel-2));
     border:2px solid var(--panel-line);
     box-shadow:inset 0 2px 0 rgba(255,255,255,.07), 0 3px 0 rgba(0,0,0,.3);
@@ -465,7 +478,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.7.4</div>
+      <div class="version">v1.8.1</div>
     </div>
 
     <div class="screen" id="settings">
@@ -475,6 +488,11 @@
     </div>
 
     <button class="pausebtn" id="btn-pause" aria-label="pause">&#10073;&#10073;</button>
+
+    <div class="turnpad" id="pad-turn">
+      <button data-s="-1" aria-label="turn left">&#8630;</button>
+      <button data-s="1"  aria-label="turn right">&#8631;</button>
+    </div>
 
     <div class="pad" id="pad">
       <button class="b-up"    data-d="up"    aria-label="up">&#9650;</button>
@@ -1751,7 +1769,13 @@ function sync(){
 }
 function hintFor(kind){
   const touch = (mode !== 'wide');
-  if(kind === 'start') return touch ? 'SWIPE THE BOARD OR TAP THE ARROWS' : 'ARROWS OR WASD &middot; SPACE TO PAUSE';
+  if(kind === 'start'){
+    if(!touch) return 'ARROWS OR WASD &middot; SPACE TO PAUSE';
+    const m = cfgVal('touch');
+    if(m === 1) return 'SWIPE, OR THE TWO TURN BUTTONS';
+    if(m === 2) return 'SWIPE, OR TAP THE LEFT OR RIGHT SIDE';
+    return 'SWIPE, OR TAP THE ARROWS';
+  }
   if(kind === 'resume') return touch ? 'TAP THE BOARD TO CONTINUE' : 'PRESS SPACE TO CONTINUE';
   return touch ? 'TAP TO POUR ANOTHER ROUND' : 'PRESS SPACE TO POUR ANOTHER ROUND';
 }
@@ -2546,6 +2570,8 @@ const OPTIONS = [
    vals:[['DAWDLING',600],['STEADY',430],['SPRIGHTLY',320]], def:1},
   {key:'thirst',  name:'HIS THIRST',  hint:'glasses before he nods off',
    vals:[['1',1],['2',2],['3',3],['5',5],['NEVER FULL',99]], def:2},
+  {key:'touch',   name:'TOUCH',       hint:'how the on-screen controls work on a phone',
+   vals:[['PAD',0],['TURN L/R',1],['TAP SIDES',2]], def:0},
   {key:'motion',  name:'MOTION',      hint:'reduced stills the bobbing and drifting',
    vals:[['FULL',1],['REDUCED',0]], def:0},
   {key:'sound',   name:'SOUND',       hint:'sips, waddles and hiccups',
@@ -2601,6 +2627,7 @@ async function loadCfg(){
       matchPreset();
     }
   }catch(_){}
+  applyTouchMode();
   if(!cfgTouched){
     muted = !cfgVal('sound');
     document.getElementById('sound-state').textContent = muted ? 'OFF' : 'ON';
@@ -2687,6 +2714,7 @@ function bump(i, d){
       muted = !cfgVal('sound');
       document.getElementById('sound-state').textContent = muted ? 'OFF' : 'ON';
     }
+    if(o.key === 'touch') applyTouchMode();
     matchPreset();
   }
   saveCfg();
@@ -2779,6 +2807,22 @@ const KEYMAP = {
   ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right',
   w:'up', s:'down', a:'left', d:'right', W:'up', S:'down', A:'left', D:'right'
 };
+const TURN_ORDER = ['up','right','down','left'];
+function turnSide(side){                      // -1 bends left, +1 bends right
+  if(state === 'over'){ reset(); return; }
+  const ref = queue.length ? queue[queue.length-1] : dir;
+  const i = TURN_ORDER.indexOf(ref);
+  if(i < 0) return;
+  turn(TURN_ORDER[(i + (side > 0 ? 1 : 3)) % 4]);
+}
+
+function applyTouchMode(){
+  const m = cfgVal('touch');
+  document.body.classList.toggle('ctl-pad',   m === 0);
+  document.body.classList.toggle('ctl-turn',  m === 1);
+  document.body.classList.toggle('ctl-sides', m === 2);
+}
+
 function turn(name){
   if(state === 'over') return;
   if(state === 'ready' || state === 'paused'){ state = 'run'; hideVeil(); }
@@ -2815,21 +2859,40 @@ window.addEventListener('keydown', e => {
   }
 }, {passive:false});
 
-const padEl = document.getElementById('touchpad');
-let tsx = 0, tsy = 0, moved = false;
-padEl.addEventListener('touchstart', e => { const p = e.touches[0]; tsx = p.clientX; tsy = p.clientY; moved = false; }, {passive:true});
-padEl.addEventListener('touchmove', e => {
+// swipes work anywhere on the screen, whichever control mode is chosen
+const stageEl = document.getElementById('stage');
+let tsx = 0, tsy = 0, moved = false, onButton = false;
+const isButton = e => !!(e.target && e.target.closest && e.target.closest('button'));
+
+stageEl.addEventListener('touchstart', e => {
+  onButton = isButton(e);
+  const p = e.touches[0]; tsx = p.clientX; tsy = p.clientY; moved = false;
+}, {passive:true});
+
+stageEl.addEventListener('touchmove', e => {
+  if(onButton || screen !== 'game') return;
   const p = e.touches[0], dx = p.clientX - tsx, dy = p.clientY - tsy;
-  if(moved || Math.hypot(dx,dy) < 22) return;
+  if(moved || Math.hypot(dx,dy) < 18) return;
   moved = true;
   turn(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
   e.preventDefault();
 }, {passive:false});
-padEl.addEventListener('touchend', () => {
-  if(moved) return;
+
+stageEl.addEventListener('touchend', e => {
+  if(moved || onButton || screen !== 'game') return;
+  if(cfgVal('touch') === 2 && state === 'run'){       // tap a side to bend that way
+    turnSide(tsx < window.innerWidth/2 ? -1 : 1);
+    return;
+  }
   if(state === 'over') reset();
   else if(state !== 'run'){ state = 'run'; hideVeil(); }
 });
+document.querySelectorAll('#pad-turn button').forEach(b => {
+  const go = e => { e.preventDefault(); turnSide(+b.dataset.s); };
+  b.addEventListener('pointerdown', go);
+  b.addEventListener('contextmenu', e => e.preventDefault());
+});
+
 document.querySelectorAll('#pad button').forEach(b => {
   const go = e => {
     e.preventDefault();
