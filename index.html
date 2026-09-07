@@ -478,7 +478,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.8.4</div>
+      <div class="version">v1.9</div>
     </div>
 
     <div class="screen" id="settings">
@@ -1953,6 +1953,7 @@ function bite(){
     }
   });
   sfx('bite');
+  buzz([30, 40, 30]);           // three pulses, one per segment
   sync();
   return true;
 }
@@ -2820,6 +2821,13 @@ function tone(f0, f1, dur, type, vol, delay){
   o.connect(g); g.connect(a.destination);
   o.start(t0); o.stop(t0 + dur + 0.03);
 }
+// a brief buzz to go with the bite. Android honours this; iOS Safari has never
+// supported the API, so there it simply does nothing.
+function buzz(pattern){
+  if(muted) return;
+  try{ if(navigator.vibrate) navigator.vibrate(pattern); }catch(_){}
+}
+
 function sfx(kind){
   if(muted) return;
   switch(kind){
