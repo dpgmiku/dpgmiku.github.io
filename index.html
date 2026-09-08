@@ -478,7 +478,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.9</div>
+      <div class="version">v1.9.2</div>
     </div>
 
     <div class="screen" id="settings">
@@ -1953,7 +1953,7 @@ function bite(){
     }
   });
   sfx('bite');
-  buzz([30, 40, 30]);           // three pulses, one per segment
+  buzz([70, 55, 70, 55, 90]);   // long enough for the motor to actually render
   sync();
   return true;
 }
@@ -2821,11 +2821,17 @@ function tone(f0, f1, dur, type, vol, delay){
   o.connect(g); g.connect(a.destination);
   o.start(t0); o.stop(t0 + dur + 0.03);
 }
-// a brief buzz to go with the bite. Android honours this; iOS Safari has never
-// supported the API, so there it simply does nothing.
+// A buzz to go with the bite. Android honours this; iOS Safari has never supported
+// the API. Pulses are kept long because phones with a linear actuator (Pixel, most
+// recent Androids) need tens of milliseconds just to spin the motor up — a 30ms
+// pulse fires but cannot be felt.
 function buzz(pattern){
   if(muted) return;
-  try{ if(navigator.vibrate) navigator.vibrate(pattern); }catch(_){}
+  try{
+    if(!navigator.vibrate) return;
+    navigator.vibrate(0);            // cancel anything still running
+    navigator.vibrate(pattern);
+  }catch(_){}
 }
 
 function sfx(kind){
@@ -2867,6 +2873,9 @@ function sfx(kind){
 }
 function setMuted(v){
   muted = v;
+  // a single pulse when switching sound on, so you can check the phone buzzes
+  // at all without waiting to be bitten
+  if(!muted){ try{ if(navigator.vibrate) navigator.vibrate(160); }catch(_){} }
   const o = OPTIONS.find(x => x.key === 'sound');
   if(o){ cfg.sound = muted ? 1 : 0; saveCfg(); paintOptions(); }
   document.getElementById('sound-state').textContent = muted ? 'OFF' : 'ON';
