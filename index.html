@@ -478,7 +478,7 @@
         <div class="menu-best">BEST <span id="menu-best-val">000000</span></div>
       </div>
       <div class="ribbon">&hearts; A SMALL SIP FOR A LONGER JOURNEY &hearts;</div>
-      <div class="version">v1.9.2</div>
+      <div class="version">v1.10.1</div>
     </div>
 
     <div class="screen" id="settings">
@@ -1771,6 +1771,8 @@ let krzysztof = null, tAcc = 0, tWait = 9000;
 let mode = 'wide';
 let tailPrev = null, nowMs = 0, blinkUntil = 0, eaten = 0;
 let maxLen = 0, stolen = 0, runMs = 0, milestone = 0, recent = [];
+let combo = 0, bestCombo = 0;
+const COMBO_CAP = 5;                       // the fifth steal in a row is the most it pays
 // settings are copied once per run, so nothing can change the rules mid-game
 let RUN = {walls:1, speed:150, accel:3, glasses:8, krz:2, krzPace:430, thirst:3};
 let petals = [], ghosts = [], booms = [], hurtUntil = 0;
@@ -1815,6 +1817,7 @@ function reset(){
   score = 0; eaten = 0; stepMs = RUN.speed; acc = 0; state = 'ready';
   if(skyPhase !== 0){ skyPhase = 0; paintScene(SIZES[mode][0], SIZES[mode][1]); }
   maxLen = snake.length; stolen = 0; runMs = 0; milestone = 0; petals = [];
+  combo = 0; bestCombo = 0;
   ghosts = []; booms = []; hurtUntil = 0;
   document.getElementById('veil-stats').innerHTML = '';
   krzysztof = null; tAcc = 0; tWait = 9000;
@@ -1879,12 +1882,18 @@ function step(){
     wines.splice(hit,1);
     const c = freeCell(); if(c) wines.push(c);
     const prize = contested(head.x, head.y);
-    score += prize ? 50 : 20;
+    if(prize){
+      combo++;                             // ordinary glasses leave the streak alone;
+      if(combo > bestCombo) bestCombo = combo;   // only he can break it, by drinking his own
+      stolen++;
+    }
+    const gain = prize ? 50 * Math.min(combo, COMBO_CAP) : 20;
+    score += gain;
     eaten++;
     stepMs = Math.max(RUN.speed*0.40, RUN.speed - eaten*RUN.accel);
-    if(prize) stolen++;
-    celebrate(head.x*CELL + CELL/2, head.y*CELL + CELL/2, prize);
+    celebrate(head.x*CELL + CELL/2, head.y*CELL + CELL/2, prize, gain, combo);
     sfx(prize ? 'prize' : 'sip');
+    if(prize) comboTone(combo);
     krzysztofLostRace(head.x, head.y);
     if(snake.length > maxLen) maxLen = snake.length;
     const ph = skyFor(score);
@@ -1903,11 +1912,16 @@ function contested(x, y){
             krzysztof.goal.x === x && krzysztof.goal.y === y);
 }
 
-function celebrate(cx, cy, prize){
+function celebrate(cx, cy, prize, gain, streak){
   blinkUntil = nowMs + (prize ? 520 : 320);
   pops.push({x:cx, y:cy - (prize ? 30 : 26), t0:nowMs,
-             text: prize ? '+50' : '+20',
+             text: '+' + gain,
              big: prize, tone: prize ? 'white' : 'pink', life: prize ? 1250 : 850});
+  if(prize && streak > 1){
+    pops.push({x:cx, y:cy - 72, t0:nowMs + 110,      // above the number, clear of her head
+               text:'X' + Math.min(streak, COMBO_CAP),
+               tone:'pink', life:1150});
+  }
   spills.push({x:cx, y:cy, t0:nowMs});
   for(let i=0;i<(prize ? 16 : 8);i++){
     const a = -Math.PI/2 + (Math.random()-0.5)*2.4;
@@ -1990,6 +2004,7 @@ function showRunStats(){
     '<div>GLASSES</div><div><b>' + eaten + '</b></div>' +
     '<div>LONGEST</div><div><b>' + maxLen + '</b></div>' +
     '<div>OFF KRZYSZTOF</div><div><b>' + stolen + '</b></div>' +
+    '<div>BEST STREAK</div><div><b>' + bestCombo + '</b></div>' +
     '<div>TIME</div><div><b>' + fmtTime(runMs) + '</b></div>';
 }
 
@@ -2105,6 +2120,7 @@ function krzysztofStep(){
     wines.splice(hit,1);
     const c = freeCell(); if(c) wines.push(c);
     krzysztof.state = 'sip'; krzysztof.t0 = nowMs; krzysztof.stage = 0; krzysztof.goal = null;
+    combo = 0;                             // he got there first: streak over
     sfx('steal');
   }
 }
@@ -2387,7 +2403,8 @@ const GLYPH = {
   '6':['###','#..','###','#.#','###'], '7':['###','..#','..#','..#','..#'],
   '8':['###','#.#','###','#.#','###'], '9':['###','#.#','###','..#','###'],
   'Z':['###','..#','.#.','#..','###'],
-  '-':['...','...','###','...','...']
+  '-':['...','...','###','...','...'],
+  'X':['#.#','#.#','.#.','#.#','#.#']
 };
 function tinyText(ctx, text, cx, cy, s, col){
   const w = text.length*4 - 1;
@@ -2871,6 +2888,15 @@ function sfx(kind){
                    tone(300, 232, 0.34, 'triangle', 0.09, 0.31); break;
   }
 }
+// each steal in a row rings a step higher
+function comboTone(n){
+  if(n < 2) return;
+  const step = Math.min(n, COMBO_CAP) - 1;
+  const f = 720 * Math.pow(1.16, step);
+  tone(f, f*1.18, 0.10, 'triangle', 0.075, 0.24);
+  tone(f*1.5, f*1.7, 0.16, 'triangle', 0.06, 0.34);
+}
+
 function setMuted(v){
   muted = v;
   // a single pulse when switching sound on, so you can check the phone buzzes
